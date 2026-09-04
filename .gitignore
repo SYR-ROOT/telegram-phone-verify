@@ -1,5 +1,22 @@
 node_modules/
 dist/
 *.log
+
+# Secrets
 .env
 .env.*
+!.env.example
+
+# Never publish local working files: session transcripts, agent state, notes,
+# or anything an editor or assistant leaves behind in the project directory.
+*.jsonl
+*transcript*
+*conversation*
+*chat-*
+.claude/
+.cursor/
+.aider*
+.history/
+scratch/
+notes.md
+TODO.local.md
