@@ -1,9 +1,25 @@
 # telegram-phone-verify
 
-Verify a phone number through **Telegram** instead of SMS.
+> **وَقفٌ تقنيّ، صدقةً جاريةً عن أرواح شهداء سوريا.**
+>
+> **A technical _waqf_ — a perpetual open-source endowment, given as an
+> ongoing charity for the souls of the martyrs of Syria.**
+>
+> *إلى أرواح شهداء سوريا. / To the souls of the martyrs of Syria.*
+> See [`DEDICATION.md`](DEDICATION.md).
+
+> Verify a phone number through **Telegram** instead of SMS. Where
+> international SMS is unreliable or refused outright, Telegram has already
+> verified the number — so accept its verification rather than repeating it.
+
+![license](https://img.shields.io/badge/license-MIT-blue.svg)
+![dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)
+![tests](https://img.shields.io/badge/tests-27%20passing-brightgreen)
+![waqf](https://img.shields.io/badge/%D9%88%D9%82%D9%81%20%D8%AA%D9%82%D9%86%D9%8A-technical%20waqf-brightgreen)
+
 Zero dependencies. No database. Works with any framework.
 
-[العربية](#بالعربية) · MIT
+[العربية](#بالعربية)
 
 ---
 
@@ -182,7 +198,10 @@ describing the impact.
 
 ## License
 
-MIT — use it, fork it, ship it.
+MIT — use it, fork it, ship it. No attribution required, no strings.
+
+This is a **technical waqf**: released permanently, for anyone, with no
+expectation of return. See [`DEDICATION.md`](DEDICATION.md).
 
 ---
 
@@ -251,4 +270,7 @@ contact.user_id === message.from.id
 
 ## الرخصة
 
-MIT — استخدمها، عدّلها، انشرها.
+MIT — استخدمها، عدّلها، انشرها. بلا شرط إسناد، وبلا مقابل.
+
+هذا **وقف تقنيّ**: مُخرَج للناس إخراجاً دائماً، صدقةً جاريةً عن أرواح شهداء
+سوريا. انظر [`DEDICATION.md`](DEDICATION.md).
