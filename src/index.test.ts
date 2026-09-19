@@ -7,6 +7,7 @@ import {
   isAuthenticWebhook,
   toE164,
   parseUpdate,
+  isAnonymousNumber,
 } from "./index";
 
 describe("toE164", () => {
@@ -95,6 +96,103 @@ describe("parseUpdate", () => {
     expect(parseUpdate({})).toEqual({ kind: "ignored" });
     expect(parseUpdate({ message: {} })).toEqual({ kind: "ignored" });
     expect(parseUpdate({ message: { from, chat: undefined } })).toEqual({ kind: "ignored" });
+  });
+});
+
+describe("parseUpdate - private chats only", () => {
+  // A group's id is negative and shared by every member, so the person who
+  // typed the token and the person sharing a contact can be different people
+  // in the same chat.
+  const owner = { id: 111 };
+  const bystander = { id: 222 };
+  const group = { id: -100987654321, type: "supergroup" };
+
+  it("IGNORES a /start typed into a group, so a token is never bound to one", () => {
+    // Step one of the attack: attach somebody's token to a shared chat.
+    const r = parseUpdate({ message: { from: owner, chat: group, text: "/start abc123" } });
+    expect(r).toEqual({ kind: "ignored" });
+  });
+
+  it("IGNORES a member's OWN contact shared in a group", () => {
+    // Step two. It really is the bystander's own contact, so the ownership
+    // check passes honestly. Only the chat check stands between this and the
+    // token owner's account being verified with the bystander's number.
+    const r = parseUpdate({
+      message: {
+        from: bystander,
+        chat: group,
+        contact: { phone_number: "963991234567", user_id: 222 },
+      },
+    });
+    expect(r).toEqual({ kind: "ignored" });
+  });
+
+  it.each([["group"], ["supergroup"], ["channel"]])("ignores a %s chat on its type alone", (type) => {
+    // The id deliberately equals the sender's, so only the type can refuse it.
+    const r = parseUpdate({
+      message: {
+        from: owner,
+        chat: { id: 111, type },
+        contact: { phone_number: "963991234567", user_id: 111 },
+      },
+    });
+    expect(r).toEqual({ kind: "ignored" });
+  });
+
+  it("ignores a chat that is not the sender's, even with no type at all", () => {
+    // A hand-built update without `type` must not slip past on the missing field.
+    const r = parseUpdate({
+      message: {
+        from: bystander,
+        chat: { id: -100987654321 },
+        contact: { phone_number: "963991234567", user_id: 222 },
+      },
+    });
+    expect(r).toEqual({ kind: "ignored" });
+  });
+
+  it("still verifies in a private chat that states its type", () => {
+    const r = parseUpdate({
+      message: {
+        from: owner,
+        chat: { id: 111, type: "private" },
+        contact: { phone_number: "963991234567", user_id: 111 },
+      },
+    });
+    expect(r).toMatchObject({ kind: "verified", phone: "+963991234567" });
+  });
+});
+
+describe("anonymous numbers", () => {
+  const chat = { id: 555, type: "private" };
+  const from = { id: 555 };
+
+  it("REFUSES a Telegram +888 number, which has no SIM behind it", () => {
+    const r = parseUpdate({
+      message: { from, chat, contact: { phone_number: "88801234567", user_id: 555 } },
+    });
+    expect(r).toEqual({ kind: "rejected", reason: "anonymous_number", chatId: "555" });
+  });
+
+  it("matches the country prefix only, not 888 anywhere in the number", () => {
+    // +1 888 is a real North American toll-free range, not an anonymous number.
+    const r = parseUpdate({
+      message: { from, chat, contact: { phone_number: "18885551234", user_id: 555 } },
+    });
+    expect(r).toMatchObject({ kind: "verified", phone: "+18885551234" });
+  });
+
+  it("checks ownership first, so a forwarded +888 card is not_own_contact", () => {
+    const r = parseUpdate({
+      message: { from, chat, contact: { phone_number: "88801234567", user_id: 999 } },
+    });
+    expect(r).toEqual({ kind: "rejected", reason: "not_own_contact", chatId: "555" });
+  });
+
+  it("isAnonymousNumber reads E.164", () => {
+    expect(isAnonymousNumber("+88801234567")).toBe(true);
+    expect(isAnonymousNumber("+963991234567")).toBe(false);
+    expect(isAnonymousNumber("+18885551234")).toBe(false);
   });
 });
 

@@ -65,6 +65,17 @@ Optional but nice — the greeting inside an open chat:
 /setabouttext
 ```
 
+### Keep the bot out of groups
+
+The bot only ever talks to one person at a time, in a private chat. The library
+already ignores anything from a group, but there is no reason to let the bot
+join one:
+
+```
+/setjoingroups
+```
+Pick your bot, then choose **Disable**.
+
 ---
 
 ## 2. Generate a webhook secret
@@ -291,6 +302,16 @@ AcmeVerifyBot
 /setuserpic
 ```
 وارفع شعارك.
+
+### أبقِ البوت خارج المجموعات
+
+البوت لا يحادث إلا شخصاً واحداً في محادثة خاصة. المكتبة تتجاهل كل ما يرد من
+المجموعات أصلاً، لكن لا داعي لأن يدخل البوت مجموعة من الأساس:
+
+```
+/setjoingroups
+```
+اختر البوت، ثم **Disable**.
 
 ## 2. ولّد المفتاح السري
 

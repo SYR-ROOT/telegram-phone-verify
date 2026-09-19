@@ -103,7 +103,10 @@ app.post("/telegram/webhook", async (req, res) => {
       event.reason === "not_own_contact"
         ? "That is someone else's contact card. Use the button so Telegram " +
           "sends your own number."
-        : "That number could not be read. Please try again.";
+        : event.reason === "anonymous_number"
+          ? "Anonymous +888 numbers cannot be verified. Please use a Telegram " +
+            "account registered to a real phone number."
+          : "That number could not be read. Please try again.";
     await sendMessage(BOT_TOKEN, event.chatId, msg);
     return res.send("ok");
   }

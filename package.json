@@ -1,6 +1,6 @@
 {
   "name": "telegram-phone-verify",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Verify a phone number through Telegram instead of SMS. Zero dependencies, framework agnostic.",
   "keywords": [
     "telegram",
